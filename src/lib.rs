@@ -105,7 +105,7 @@ impl StatusLine {
 impl Response {
     pub fn new() -> Self {
         let mut headers = HashMap::new();
-        headers.insert("Server".to_string(), vec!["faras".to_string()]);
+        // headers.insert("Server".to_string(), vec!["faras".to_string()]);
         headers.insert("Content-Type".to_string(), vec!["text/plain".to_string()]);
         Response {
             status_line: StatusLine {

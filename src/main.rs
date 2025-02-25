@@ -35,14 +35,15 @@ fn handle_connection(mut stream: &TcpStream) {
     println!("request: {request:#?}");
     let mut response = Response::new();
     let path = request.request_line.target;
-    let method = request.request_line.method;
+
     let binding = vec![String::from("")].clone();
     let client_encodings = request.headers.get("Accept-Encoding").unwrap_or(&binding);
     let client_encodings = client_encodings
         .iter()
         .filter(|encoding| supported_encodings.contains(&encoding.as_str()))
         .collect::<Vec<_>>();
-    println!("client_encodings: {:#?}", client_encodings);
+
+    let method = request.request_line.method;
     if method == "GET" {
         if path == "/" {
             response.body = b"Hello, World!".to_vec();
@@ -88,7 +89,6 @@ fn handle_connection(mut stream: &TcpStream) {
             // create file in /tmp with name from path
             let mut file = fs::File::create(format!("/tmp/{}", file_name)).unwrap();
             // write request body to file
-            //
             let written = file.write_all(&request.body);
             if written.is_ok() {
                 response.status_line.status_code = 201;
