@@ -31,6 +31,10 @@ fn main() {
 }
 
 fn handle_connection(mut stream: &TcpStream) {
+    let argv = env::args().collect::<Vec<String>>();
+    // if argv[1] == "--directory"{
+    // }
+    let dir = argv[2].clone();
     let supported_encodings = ["gzip"];
     let request = Request::new(stream).unwrap();
     println!("request: {request:#?}");
@@ -71,10 +75,6 @@ fn handle_connection(mut stream: &TcpStream) {
                 "Content-Type".to_string(),
                 vec!["application/octet-stream".to_string()],
             );
-            let argv = env::args().collect::<Vec<String>>();
-            // if argv[1] == "--directory"{
-            // }
-            let dir = argv[2].clone();
 
             if let Ok(content) = fs::read(format!("{dir}{}", &path.trim_start_matches("/files/"))) {
                 response.body = content
@@ -92,7 +92,7 @@ fn handle_connection(mut stream: &TcpStream) {
         if path.starts_with("/files") {
             let file_name = path.trim_start_matches("/files/");
             // create file in /tmp with name from path
-            let mut file = fs::File::create(format!("/tmp/{}", file_name)).unwrap();
+            let mut file = fs::File::create(format!("{dir}{}", file_name)).unwrap();
             // write request body to file
             let written = file.write_all(&request.body);
             if written.is_ok() {
