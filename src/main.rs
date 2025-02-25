@@ -12,16 +12,33 @@ fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     println!("Logs from your program will appear here!");
 
-    // Uncomment this block to pass the first stage
-    //
+    let argv: Vec<String> = env::args().collect();
+
+    let mut dir = String::from("/tmp/");
+    // Check for correct number of arguments and --directory flag
+    if argv.len() > 2 {
+        // eprintln!(
+        //     "Usage: {} --directory <directory_path>",
+        //     argv.first().unwrap_or(&String::from("program"))
+        // );
+        // std::process::exit(1);
+        dir = argv[2].clone();
+    }
+
+    // if argv[1] != "--directory" {
+    //     eprintln!("Error: First argument must be --directory");
+    //     std::process::exit(1);
+    // }
+
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
 
     for stream in listener.incoming() {
         match stream {
             Ok(_stream) => {
                 println!("accepted new connection");
+                let dir = dir.clone();
 
-                thread::spawn(move || handle_connection(&_stream));
+                thread::spawn(move || handle_connection(&_stream, dir));
             }
             Err(e) => {
                 println!("error: {}", e);
@@ -30,11 +47,7 @@ fn main() {
     }
 }
 
-fn handle_connection(mut stream: &TcpStream) {
-    let argv = env::args().collect::<Vec<String>>();
-    // if argv[1] == "--directory"{
-    // }
-    let dir = argv[2].clone();
+fn handle_connection(mut stream: &TcpStream, dir: String) {
     let supported_encodings = ["gzip"];
     let request = Request::new(stream).unwrap();
     println!("request: {request:#?}");
