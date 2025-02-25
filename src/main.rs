@@ -1,3 +1,4 @@
+use std::env;
 #[allow(unused_imports)]
 use std::io::prelude::*;
 use std::net::TcpListener;
@@ -70,8 +71,12 @@ fn handle_connection(mut stream: &TcpStream) {
                 "Content-Type".to_string(),
                 vec!["application/octet-stream".to_string()],
             );
+            let argv = env::args().collect::<Vec<String>>();
+            // if argv[1] == "--directory"{
+            // }
+            let dir = argv[2].clone();
 
-            if let Ok(content) = fs::read(format!("/tmp/{}", &path.trim_start_matches("/files/"))) {
+            if let Ok(content) = fs::read(format!("{dir}{}", &path.trim_start_matches("/files/"))) {
                 response.body = content
             } else {
                 response.status_line.status_code = 404;
